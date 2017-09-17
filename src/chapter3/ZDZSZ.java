@@ -60,12 +60,45 @@ public class ZDZSZ {
 
     // --------------------------------分割线--------------------------------
 
+    /**
+     * 线性时间实现
+     */
+    private static Node zdzszLine(int[] array) {
+        int currentMax = 0;
+        int s = 0;
+        int e = -1;
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            sum += array[i];
+            if (sum > currentMax) {
+                e = i;
+                currentMax = sum;
+            } else if (sum < 0) {
+                s = i + 1;
+                sum = 0;
+            }
+        }
+        if (e == -1) {
+            currentMax = array[0];
+            for (int i = 1; i < array.length; i++) {
+                if (currentMax < array[i]) {
+                    s = i;
+                    e = i;
+                    currentMax = array[i];
+                }
+            }
+        }
+        return new Node(s, e, currentMax);
+    }
 
 
     public static void main(String[] args) {
-//        int[] array = {13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
-        int[] array = {-2, -1, -5};
-        Node n = zdzsz(array, 0, array.length - 1);
+        int[] array = {13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
+//        int[] array = {-2, -1, -5};
+        // 递归方法
+//        Node n = zdzsz(array, 0, array.length - 1);
+        // 非递归方法
+        Node n = zdzszLine(array);
         System.out.println("start::" + n.start + " end::" + n.end + " value::" + n.value);
     }
 }
