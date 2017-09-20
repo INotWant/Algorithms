@@ -44,7 +44,7 @@ public class Heap {
      * @param i 根节点位置
      * @param heapSize 堆的有效范围
      */
-    private void maxHeapify(int i, int heapSize) {
+    public void maxHeapify(int i, int heapSize) {
         if (i < heapSize) {
             int maxPos = i;
             Integer lPos = getLeftChild(i);
