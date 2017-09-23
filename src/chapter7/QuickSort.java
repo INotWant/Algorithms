@@ -39,9 +39,14 @@ public class QuickSort {
     }
 
     public static void main(String[] args) {
-        int[] array = {13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
+        long sTime = System.currentTimeMillis();
+        int[] array = new int[10000];
+        for (int i = 0; i < 10000; i++) {
+            array[i] = i + 1;
+        }
         quickSortFunction(array);
-        System.out.println(Arrays.toString(array));
+        long eTime = System.currentTimeMillis();
+        System.out.println("总时间：" + (eTime - sTime));
     }
 
 }
