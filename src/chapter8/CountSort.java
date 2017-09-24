@@ -9,6 +9,11 @@ import java.util.Arrays;
  */
 public class CountSort {
 
+    /**
+     *
+     * @param array 必须为大于等于 0 的正整数
+     * @return 有序序列
+     */
     public static int[] countSort(int[] array) {
         if (array != null) {
             int[] arrayResult = new int[array.length];
