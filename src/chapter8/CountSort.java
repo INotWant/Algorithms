@@ -41,9 +41,14 @@ public class CountSort {
 
 
     public static void main(String[] args) {
-        int[] array = new int[]{0, 2, 1, 20, 18, 5, 9, 0, 12, 29, 31};
+        long sTime = System.currentTimeMillis();
+        int[] array = new int[100000000];
+        for (int i = 0; i < 100000000; i++) {
+            array[i] = 100000000 - i;
+        }
         int[] arrayResult = countSort(array);
-        System.out.println(Arrays.toString(array));
-        System.out.println(Arrays.toString(arrayResult));
+//        System.out.println(Arrays.toString(arrayResult));
+        long eTime = System.currentTimeMillis();
+        System.out.println("总时间：" + (eTime - sTime));
     }
 }

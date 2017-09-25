@@ -1,7 +1,5 @@
 package chapter7;
 
-import java.util.Arrays;
-
 /**
  * @author kissx on 2017/9/23.
  *         快速排序
@@ -40,9 +38,9 @@ public class QuickSort {
 
     public static void main(String[] args) {
         long sTime = System.currentTimeMillis();
-        int[] array = new int[10000];
-        for (int i = 0; i < 10000; i++) {
-            array[i] = i + 1;
+        int[] array = new int[100000];
+        for (int i = 0; i < 100000; i++) {
+            array[i] = 100000 - i;
         }
         quickSortFunction(array);
         long eTime = System.currentTimeMillis();
