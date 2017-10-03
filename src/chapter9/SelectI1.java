@@ -54,7 +54,7 @@ public class SelectI1 {
     public static void main(String[] args) {
         int[] array = {13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7};
         int result = select(array, 10);
-        System.out.println("第5小的元素为：" + result);
+        System.out.println("第 10 小的元素为：" + result);
         QuickSort.quickSortFunction(array);
         System.out.println("[原数组] " + Arrays.toString(array));
     }
