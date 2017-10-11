@@ -34,7 +34,7 @@ public class OpenAddressingHashTable<K, V> {
         int i = num;
         for (; ; i++) {
             boolean flag = true;
-            for (int j = 2; j < num / 2; j++) {
+            for (int j = 2; j <= i / 2; j++) {
                 if (i % j == 0) {
                     flag = false;
                     break;
