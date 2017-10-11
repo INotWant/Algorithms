@@ -15,8 +15,8 @@ public class EntiretyHashTable<K, V> {
     private int p;  // 全域散列函数中较大的素数
     private int a;  // 用于全域散列函数
     private int b;  // 用于全域散列函数
-    private int[][] kArray;
-    private V[][] vArray;
+    private int[][] kArray;    // 存放 key 在二次散列中使用的 mm aa bb
+    private V[][] vArray;      // 存放 value 与 key 的下标对应
 
     private Random random = new Random();
 
