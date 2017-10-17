@@ -104,7 +104,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
                 TNode<T> temp = ttNode.p;
                 transplant(tNode, ttNode);
                 ttNode.l = tNode.l;
-                ttNode.l.p = tNode;
+                ttNode.l.p = ttNode;
                 if (temp != tNode) {
                     ttNode.r = tNode.r;
                     ttNode.r.p = ttNode;
@@ -177,6 +177,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return null;
     }
 
+    /**
+     * 获取前驱（中序遍历）
+     */
     public TNode<T> precursor(TNode<T> tNode) {
         if (tNode != null) {
             if (tNode.l != null)
@@ -194,6 +197,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return null;
     }
 
+    /**
+     * 获取后继(中序遍历)
+     */
     public TNode<T> successor(TNode<T> tNode) {
         if (tNode != null) {
             if (tNode.r != null)
@@ -211,6 +217,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return null;
     }
 
+    /**
+     * 中序遍历
+     */
     public List<TNode<T>> traversal() {
         List<TNode<T>> list = new ArrayList<>();
         traversalHelp(this.tHead, list);
