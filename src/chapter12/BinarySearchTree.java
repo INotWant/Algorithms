@@ -99,13 +99,16 @@ public class BinarySearchTree<T extends Comparable<T>> {
                 TNode<T> ttNode = getMin(tNode.r);
                 if (ttNode.r != null) {
                     transplant(ttNode, ttNode.r);
-                } else
+                } else if (ttNode.p != tNode)
                     ttNode.p.l = null;
+                TNode<T> temp = ttNode.p;
                 transplant(tNode, ttNode);
                 ttNode.l = tNode.l;
                 ttNode.l.p = tNode;
-                ttNode.r = tNode.r;
-                ttNode.r.p = ttNode;
+                if (temp != tNode) {
+                    ttNode.r = tNode.r;
+                    ttNode.r.p = ttNode;
+                }
             }
         }
         return tNode;
