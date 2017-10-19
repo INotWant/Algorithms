@@ -49,6 +49,29 @@ public class OrderStatisticTree<T extends Comparable<T>> {
     }
 
     /**
+     * 查找秩为 i 的结点
+     *
+     * @param i 位置
+     * @return 若查找到返回所得结点，否则，返回 nullNode
+     */
+    public Node<T> select(int i) {
+        return selectHelp(i, this.root);
+    }
+
+    private Node<T> selectHelp(int i, Node<T> cNode) {
+        if (cNode != nullNode) {
+            int r = cNode.lcNode.tNum + 1;
+            if (r == i)
+                return cNode;
+            else if (r < i)
+                return selectHelp(i - r, cNode.rcNode);
+            else
+                return selectHelp(i, cNode.lcNode);
+        }
+        return cNode;
+    }
+
+    /**
      * 操作同于红黑树 {@link chapter13.RedBlackTree} 插入操作，只是加入了对 tNum 的维护。
      *
      * @param value 待插入值
@@ -370,5 +393,17 @@ public class OrderStatisticTree<T extends Comparable<T>> {
         Node<Integer> node = ost.search(14);
         ost.delete(node);
         System.out.println("-------------END-------------");
+    }
+
+    @Test
+    public void testSelect(){
+        OrderStatisticTree<Integer> ost = new OrderStatisticTree<>();
+        ost.insert(4);
+        ost.insert(14);
+        ost.insert(5);
+        ost.insert(15);
+        ost.insert(1);
+        Node<Integer> node = ost.select(3);
+        System.out.println(node.value);
     }
 }
