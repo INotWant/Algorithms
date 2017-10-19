@@ -58,6 +58,20 @@ public class OrderStatisticTree<T extends Comparable<T>> {
         return selectHelp(i, this.root);
     }
 
+    /**
+     * @param node 结点
+     * @return 结点对应的秩
+     */
+    public int rank(Node<T> node) {
+        int r = node.lcNode.tNum + 1;
+        while (node.pNode != nullNode) {
+            if (node == node.pNode.rcNode)
+                r += node.pNode.lcNode.tNum + 1;
+            node = node.pNode;
+        }
+        return r;
+    }
+
     private Node<T> selectHelp(int i, Node<T> cNode) {
         if (cNode != nullNode) {
             int r = cNode.lcNode.tNum + 1;
@@ -396,7 +410,7 @@ public class OrderStatisticTree<T extends Comparable<T>> {
     }
 
     @Test
-    public void testSelect(){
+    public void testSelect() {
         OrderStatisticTree<Integer> ost = new OrderStatisticTree<>();
         ost.insert(4);
         ost.insert(14);
@@ -405,5 +419,18 @@ public class OrderStatisticTree<T extends Comparable<T>> {
         ost.insert(1);
         Node<Integer> node = ost.select(3);
         System.out.println(node.value);
+    }
+
+    @Test
+    public void testRank() {
+        OrderStatisticTree<Integer> ost = new OrderStatisticTree<>();
+        ost.insert(4);
+        ost.insert(14);
+        ost.insert(5);
+        ost.insert(15);
+        ost.insert(1);
+        int i = 4;
+        Node<Integer> node = ost.search(i);
+        System.out.println(i + "::" + ost.rank(node));
     }
 }
