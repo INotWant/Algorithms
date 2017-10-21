@@ -273,8 +273,13 @@ public class OrderStatisticTree<T extends Comparable<T>> {
                 }
                 y.isRed = z.isRed;
                 // 维护 tNum
-                if (y.rcNode != nullNode)
-                    y.rcNode.tNum--;
+                if (y.rcNode != nullNode) {
+                    temp = y.rcNode;
+                    while (temp != x) {
+                        temp.tNum--;
+                        temp = temp.lcNode;
+                    }
+                }
                 y.tNum = y.lcNode.tNum + y.rcNode.tNum + 1;
             }
             parentalSub(node);
@@ -396,15 +401,15 @@ public class OrderStatisticTree<T extends Comparable<T>> {
     public void testDelete() {
         OrderStatisticTree<Integer> ost = new OrderStatisticTree<>();
         ost.insert(4);
-//        ost.insert(23);
-//        ost.insert(21);
-//        ost.insert(15);
-//        ost.insert(1);
-//        ost.insert(5);
-//        ost.insert(8);
-//        ost.insert(11);
+        ost.insert(23);
+        ost.insert(21);
+        ost.insert(15);
+        ost.insert(1);
+        ost.insert(5);
+        ost.insert(8);
+        ost.insert(11);
         ost.insert(14);
-        Node<Integer> node = ost.search(14);
+        Node<Integer> node = ost.search(8);
         ost.delete(node);
         System.out.println("-------------END-------------");
     }
