@@ -33,6 +33,7 @@ public class CutRod {
                     s[n - 1] = i;
                 }
             }
+            return benefit;
         }
         return 0;
     }
@@ -84,7 +85,7 @@ public class CutRod {
         int[] b = new int[n];
         Arrays.fill(b, -1);
         int[] s = new int[n];
-        cutRod1(pArray, n, b, s);
+        System.out.println("收益 :: " + cutRod1(pArray, n, b, s));
         print(s);
         System.out.println("---------- END ----------");
     }
