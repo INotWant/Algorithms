@@ -74,8 +74,15 @@ public class HuffmanCode {
         }
     }
 
+    public void setCharacterList(List<Node> characterList) {
+        this.characterList = characterList;
+    }
 
-//    -------------- TEST --------------
+    public List<Node> getCharacterList() {
+        return characterList;
+    }
+
+    //    -------------- TEST --------------
 
     public static void main(String[] args) {
         ArrayList<Node> characterList = new ArrayList<>();
