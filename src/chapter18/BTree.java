@@ -141,17 +141,41 @@ public class BTree<K extends Comparable<K>, V> {
         }
     }
 
+    /**
+     * @param key 关键字
+     * @return 关键字对应的值
+     */
+    public V search(K key) {
+        BNode<K, V> cNode = this.root;
+        while (cNode != null) {
+            int i = 0;
+            for (; i < cNode.n; i++) {
+                if (cNode.keys.get(i).compareTo(key) == 0)
+                    return cNode.values.get(i);
+                else if (cNode.keys.get(i).compareTo(key) > 0)
+                    break;
+            }
+            if (!cNode.isLeaf)
+                cNode = cNode.children.get(i);
+            else
+                cNode = null;
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         BTree<Character, String> bTree = new BTree<>(2);
-        bTree.insert('M', "Jie");
-        bTree.insert('D', "Jie");
-//        bTree.insert('H', "Jie");
-//        bTree.insert('Q', "Jie");
-//        bTree.insert('X', "Jie");
-//        bTree.insert('T', "Jie");
-//        bTree.insert('B', "Jie");
-//        bTree.insert('C', "Jie");
+        bTree.insert('M', "Computer");
+        bTree.insert('D', "Hello");
+        bTree.insert('H', "Java");
+        bTree.insert('Q', "C++");
+        bTree.insert('X', "C");
+        bTree.insert('T', "Compile");
+        bTree.insert('B', "Linux");
+        bTree.insert('C', "GitHub");
+        System.out.println(bTree.search('A'));
         System.out.println("---------- END ----------");
+
     }
 
 }
