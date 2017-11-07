@@ -1,7 +1,7 @@
 package chapter18;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,9 +21,9 @@ public class BTree<K extends Comparable<K>, V> {
     }
 
     public static class BNode<K, V> {
-        private List<K> keys = new ArrayList<>();   // 关键字集合
-        private List<V> values = new ArrayList<>(); // 关键字对应的数据
-        private List<BNode<K, V>> children = new ArrayList<>(); // 子孩子集合
+        private List<K> keys = new LinkedList<>();   // 关键字集合
+        private List<V> values = new LinkedList<>(); // 关键字对应的数据
+        private List<BNode<K, V>> children = new LinkedList<>(); // 子孩子集合
         private boolean isLeaf; // 是否为叶节点
         private int n;  // 关键字的个数
 
@@ -163,19 +163,153 @@ public class BTree<K extends Comparable<K>, V> {
         return null;
     }
 
+    /**
+     * @param key 待删除的关键字
+     * @return 删除成功时，返回关键字对应的“数据”，否则返回 null
+     */
+    public V delete(K key) {
+        return deleteHelp(this.root, key);
+    }
+
+    // 删除帮组类
+    private V deleteHelp(BNode<K, V> cNode, K key) {
+        while (cNode != null) {
+            int i = 0;
+            for (; i < cNode.n; i++) {
+                if (cNode.isLeaf && cNode.keys.get(i).compareTo(key) == 0) {
+                    // 要删除的关键字在叶节点的情况
+                    --cNode.n;
+                    cNode.keys.remove(i);
+                    return cNode.values.remove(i);
+                } else if (cNode.keys.get(i).compareTo(key) == 0) {
+                    // 要删除的关键字在内部结点的情况
+                    int b1 = i;
+                    int b2 = i + 1;
+                    if (cNode.children.get(b1).n >= degree) {
+                        // 左兄弟结点关键字数大于等于 t 的情况
+                        BNode<K, V> bNode = cNode.children.get(b1);
+                        K rKey = bNode.keys.get(bNode.n - 1);
+                        V rValue = bNode.values.get(bNode.n - 1);
+                        deleteHelp(bNode, rKey);
+                        V resultValue = cNode.values.get(i);
+                        cNode.keys.set(i, rKey);
+                        cNode.values.set(i, rValue);
+                        return resultValue;
+                    } else if (cNode.children.get(b2).n >= degree) {
+                        // 右兄弟结点关键字数大于等于 t 的情况
+                        BNode<K, V> bNode = cNode.children.get(b2);
+                        K rKey = bNode.keys.get(0);
+                        V rValue = bNode.values.get(0);
+                        deleteHelp(bNode, rKey);
+                        V resultValue = cNode.values.get(i);
+                        cNode.keys.set(i, rKey);
+                        cNode.values.set(i, rValue);
+                        return resultValue;
+                    } else {
+                        // 相邻结点都不大于的情况，需要合并
+                        if (cNode.n - 1 == 0)
+                            this.root = cNode.children.get(0);
+                        union(cNode, i);
+                        return deleteHelp(cNode, key);
+                    }
+                } else if (cNode.keys.get(i).compareTo(key) > 0)
+                    break;
+            }
+            if (cNode.isLeaf)
+                return null;
+            else {
+                // 要下降，此时要判断下降至结点的关键字的个数
+                if (cNode.children.get(i).n >= degree)
+                    cNode = cNode.children.get(i);
+                else {
+                    // 所至结点关键字数 t-1 的情况
+                    int b1 = i - 1;
+                    int b2 = i + 1;
+                    if (b1 >= 0 && cNode.children.get(b1).n >= degree) {
+                        // 由其左兄弟输送
+                        BNode<K, V> bNode = cNode.children.get(b1);
+                        K rKey = bNode.keys.remove(bNode.n - 1);
+                        V rValue = bNode.values.remove(bNode.n - 1);
+                        BNode<K, V> rChild = null;
+                        if (!bNode.isLeaf)
+                            rChild = bNode.children.remove(bNode.n);
+                        --bNode.n;
+                        K moveKey = cNode.keys.get(i - 1);
+                        V moveValue = cNode.values.get(i - 1);
+                        cNode.keys.set(i - 1, rKey);
+                        cNode.values.set(i - 1, rValue);
+                        cNode = cNode.children.get(i);
+                        ((LinkedList<K>) cNode.keys).addFirst(moveKey);
+                        ((LinkedList<V>) cNode.values).addFirst(moveValue);
+                        if (!bNode.isLeaf)
+                            ((LinkedList<BNode<K, V>>) cNode.children).addFirst(rChild);
+                        ++cNode.n;
+                    } else if (b2 < cNode.children.size() && cNode.children.get(b2).n >= degree) {
+                        // 由其右兄弟输送
+                        BNode<K, V> bNode = cNode.children.get(b2);
+                        K rKey = bNode.keys.remove(0);
+                        V rValue = bNode.values.remove(0);
+                        BNode<K, V> rChild = null;
+                        if (!bNode.isLeaf)
+                            rChild = bNode.children.remove(0);
+                        --bNode.n;
+                        K moveKey = cNode.keys.get(i);
+                        V moveValue = cNode.values.get(i);
+                        cNode.keys.set(i, rKey);
+                        cNode.values.set(i, rValue);
+                        cNode = cNode.children.get(i);
+                        ((LinkedList<K>) cNode.keys).addLast(moveKey);
+                        ((LinkedList<V>) cNode.values).addLast(moveValue);
+                        if (!bNode.isLeaf)
+                            ((LinkedList<BNode<K, V>>) cNode.children).addLast(rChild);
+                        ++cNode.n;
+                    } else { int b = b1 >= 0 ? b1 : b2;
+                        if (b == b1)
+                            union(cNode, i - 1);
+                        else
+                            union(cNode, i);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    // 合并 cNode 结点中 i 和 i+1 子结点至 i 结点上
+    private void union(BNode<K, V> cNode, int i) {
+        K moveKey = cNode.keys.remove(i);
+        V moveValue = cNode.values.remove(i);
+        BNode<K, V> rChild = cNode.children.remove(i + 1);
+        --cNode.n;
+        cNode = cNode.children.get(i);
+        cNode.keys.add(moveKey);
+        cNode.keys.addAll(rChild.getKeys());
+        cNode.values.add(moveValue);
+        cNode.values.addAll(rChild.getValues());
+        if (!rChild.isLeaf)
+            cNode.children.addAll(rChild.getChildren());
+        cNode.n += 1 + rChild.n;
+    }
+
     public static void main(String[] args) {
+        System.out.println("--------- BEGIN ---------");
         BTree<Character, String> bTree = new BTree<>(2);
         bTree.insert('M', "Computer");
         bTree.insert('D', "Hello");
         bTree.insert('H', "Java");
         bTree.insert('Q', "C++");
-        bTree.insert('X', "C");
-        bTree.insert('T', "Compile");
+        bTree.insert('C', "C");
+        bTree.insert('I', "SSH");
+        bTree.insert('A', "Compile");
         bTree.insert('B', "Linux");
-        bTree.insert('C', "GitHub");
+        bTree.insert('T', "GitHub");
+        bTree.insert('E', "World");
+        bTree.insert('F', "Python");
+        bTree.insert('J', "OA");
+        bTree.insert('K', "CRM");
         System.out.println(bTree.search('A'));
+        System.out.println(bTree.delete('Z'));
         System.out.println("---------- END ----------");
-
     }
 
 }
