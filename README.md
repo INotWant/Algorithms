@@ -55,6 +55,18 @@
     - 矩阵链乘法问题
     - 最优二叉搜索树问题
 
+- **chapter 16**
+    - 活动选择问题
+    - `HuffmanCode`
+    - 任务调度问题
+
+- **chapter 18**
+    - `B Tree`
+
+- **chapter 19**
+    - `FIB Heap`
+
+
 ## 资源
 
 推荐原作者的讲授视频：[《算法导论(*MIT*)》](http://open.163.com/special/opencourse/algorithms.html) (虽然我还没看，先啃书~~)
