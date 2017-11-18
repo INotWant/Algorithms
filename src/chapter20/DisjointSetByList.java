@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * 不想交集合 -- 链表表示
+ * 【注意：对内部类（内部数据结构）的封装】
  *
  * @author kissx on 2017/11/18.
  */
