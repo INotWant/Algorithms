@@ -131,6 +131,12 @@ public class GraphByList {
         Map<String, BfsVertex> bfsVMap = new HashMap<>();   // 用于 BFS 的顶点集
         for (String tempV : this.vArray)
             bfsVMap.put(tempV, new BfsVertex(tempV));
+        return bfs(v, bfsVMap);
+    }
+
+    // 为了获取 bfsVMap 写的辅助方法（逻辑同上）
+    // 想过把它放到类属性中，但是每次 bfs 前都需要修改
+    private List<BfsVertex> bfs(String v, Map<String, BfsVertex> bfsVMap) {
         BfsVertex vertex = bfsVMap.get(v);
         List<BfsVertex> resultList = new ArrayList<>();
         resultList.add(vertex);
@@ -161,6 +167,37 @@ public class GraphByList {
         return resultList;
     }
 
+    /**
+     * 使用 BFS 获取单源最短路径
+     *
+     * @param start 始顶点
+     * @param end   终顶点
+     * @return 最短路径（未考虑权重）
+     */
+    public String getShortPath(String start, String end) {
+        if (start.equals(end))
+            return start;
+        StringBuilder sb = new StringBuilder();
+        Map<String, BfsVertex> bfsVMap = new HashMap<>();   // 用于 BFS 的顶点集
+        for (String tempV : this.vArray)
+            bfsVMap.put(tempV, new BfsVertex(tempV));
+        bfs(start, bfsVMap);
+        if (bfsVMap.get(end) == null || bfsVMap.get(end).pBfsVertex == null)
+            return "no path";
+        getShortPathHelp(bfsVMap.get(end), sb);
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
+    private void getShortPathHelp(BfsVertex bfsVertex, StringBuilder sb) {
+        if (bfsVertex.pBfsVertex == null)
+            sb.append(bfsVertex.v).append(",");
+        else {
+            getShortPathHelp(bfsVertex.pBfsVertex, sb);
+            sb.append(bfsVertex.v).append(",");
+        }
+    }
+
     public boolean isHaveDirection() {
         return haveDirection;
     }
@@ -170,17 +207,33 @@ public class GraphByList {
     public static void main(String[] args) {
         // 1、testCrateGraph
         String[] vArray = {"r", "s", "t", "u", "v", "w", "x", "y"};
-        Edge[] edges = new Edge[10];
+
+        // 边集1
+//        Edge[] edges = new Edge[10];
+//        edges[0] = new Edge("r", "s");
+//        edges[1] = new Edge("r", "v");
+//        edges[2] = new Edge("s", "w");
+//        edges[3] = new Edge("w", "t");
+//        edges[4] = new Edge("w", "x");
+//        edges[5] = new Edge("t", "x");
+//        edges[6] = new Edge("t", "u");
+//        edges[7] = new Edge("x", "y");
+//        edges[8] = new Edge("y", "u");
+//        edges[9] = new Edge("x", "u");
+
+        // 边集2
+        Edge[] edges = new Edge[9];
         edges[0] = new Edge("r", "s");
         edges[1] = new Edge("r", "v");
-        edges[2] = new Edge("s", "w");
-        edges[3] = new Edge("w", "t");
-        edges[4] = new Edge("w", "x");
-        edges[5] = new Edge("t", "x");
-        edges[6] = new Edge("t", "u");
-        edges[7] = new Edge("x", "y");
-        edges[8] = new Edge("y", "u");
-        edges[9] = new Edge("x", "u");
+        edges[2] = new Edge("w", "t");
+        edges[3] = new Edge("w", "x");
+        edges[4] = new Edge("t", "x");
+        edges[5] = new Edge("t", "u");
+        edges[6] = new Edge("x", "y");
+        edges[7] = new Edge("y", "u");
+        edges[8] = new Edge("x", "u");
+
+
         GraphByList graphByList = new GraphByList(vArray, edges, false);
 
 //        GraphByList graphByList = new GraphByList(vArray, null, false);
@@ -190,6 +243,11 @@ public class GraphByList {
         List<BfsVertex> resultList1 = graphByList.bfs("s");
         System.out.println(resultList);
         System.out.println(resultList1);
+
+        // 3、testGetShortPath
+        String shortPath = graphByList.getShortPath("r", "a");
+        System.out.println(shortPath);
+
         System.out.println("--------------- END ---------------");
     }
 
