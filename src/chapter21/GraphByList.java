@@ -10,8 +10,8 @@ import java.util.*;
  */
 public class GraphByList {
 
-    private Map<String, eNode> eMap = new HashMap<>();
-    private Map<String, BfsVertex> bfsVMap = new HashMap<>();   // 用于 BFS 的顶点集
+    private Map<String, eNode> eMap = new HashMap<>();  // 边集
+    private String[] vArray;    // 顶点集
     private boolean haveDirection; // 是否是有向图
 
     /**
@@ -81,9 +81,9 @@ public class GraphByList {
      */
     public GraphByList(String[] vArray, Edge[] edges, boolean haveDirection) {
         this.haveDirection = haveDirection;
+        this.vArray = Arrays.copyOf(vArray, vArray.length);
         for (String v : vArray) {
             eMap.put(v, null);
-            bfsVMap.put(v, new BfsVertex(v));
         }
         if (edges != null) {
             for (Edge edge : edges) {
@@ -128,6 +128,9 @@ public class GraphByList {
      * @return 遍历顺序集合
      */
     public List<BfsVertex> bfs(String v) {
+        Map<String, BfsVertex> bfsVMap = new HashMap<>();   // 用于 BFS 的顶点集
+        for (String tempV : this.vArray)
+            bfsVMap.put(tempV, new BfsVertex(tempV));
         BfsVertex vertex = bfsVMap.get(v);
         List<BfsVertex> resultList = new ArrayList<>();
         resultList.add(vertex);
@@ -184,7 +187,9 @@ public class GraphByList {
 
         // 2、testBFS
         List<BfsVertex> resultList = graphByList.bfs("r");
+        List<BfsVertex> resultList1 = graphByList.bfs("s");
         System.out.println(resultList);
+        System.out.println(resultList1);
         System.out.println("--------------- END ---------------");
     }
 
