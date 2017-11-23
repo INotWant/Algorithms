@@ -13,6 +13,7 @@ public class GraphByList {
     private Map<String, eNode> eMap = new HashMap<>();  // 边集
     private String[] vArray;    // 顶点集
     private boolean haveDirection; // 是否是有向图
+    private int time = 0;   // 用于 DFS 访问时间
 
     /**
      * 边的数据结构用于输入
@@ -63,6 +64,42 @@ public class GraphByList {
         @Override
         public String toString() {
             return v + " :: " + distance;
+        }
+    }
+
+    /**
+     * 用于 DFS 顶点描述
+     */
+    public static class DfsVertex {
+        private String v;
+        private MarkEnum mark = MarkEnum.white;
+        private int startTime;  // 初遇时间
+        private int endTime;    // 访问结束时间
+        private DfsVertex pDfsVertex;
+
+        public DfsVertex(String v) {
+            this.v = v;
+        }
+
+        public String getV() {
+            return v;
+        }
+
+        public int getStartTime() {
+            return startTime;
+        }
+
+        public int getEndTime() {
+            return endTime;
+        }
+
+        public DfsVertex getpDfsVertex() {
+            return pDfsVertex;
+        }
+
+        @Override
+        public String toString() {
+            return v + " :: " + startTime + "," + endTime;
         }
     }
 
@@ -189,6 +226,7 @@ public class GraphByList {
         return sb.toString();
     }
 
+    // 获取最短路径的递归辅助方法
     private void getShortPathHelp(BfsVertex bfsVertex, StringBuilder sb) {
         if (bfsVertex.pBfsVertex == null)
             sb.append(bfsVertex.v).append(",");
@@ -196,6 +234,43 @@ public class GraphByList {
             getShortPathHelp(bfsVertex.pBfsVertex, sb);
             sb.append(bfsVertex.v).append(",");
         }
+    }
+
+    /**
+     * 考虑多源情况的 DFS 遍历
+     *
+     * @return 遍历序列
+     */
+    public List<DfsVertex> dfs() {
+        this.time = 0;  // 初始化为 0
+        List<DfsVertex> resultList = new ArrayList<>();
+        Map<String, DfsVertex> dfsVMap = new HashMap<>();
+        for (String tempV : vArray)
+            dfsVMap.put(tempV, new DfsVertex(tempV));
+        for (Map.Entry<String, DfsVertex> temp : dfsVMap.entrySet()) {  // 考虑多源情况
+            DfsVertex dfsVertex = temp.getValue();
+            if (dfsVertex.mark == MarkEnum.white)
+                dfsHelp(dfsVertex, dfsVMap, resultList);
+        }
+        return resultList;
+    }
+
+    // DFS 递归辅助方法
+    private void dfsHelp(DfsVertex sVertex, Map<String, DfsVertex> dfsVMap, List<DfsVertex> resultList) {
+        sVertex.startTime = ++time;
+        sVertex.mark = MarkEnum.gray;
+        eNode eNode = eMap.get(sVertex.v);
+        while (eNode != null) {
+            DfsVertex dfsVertex = dfsVMap.get(eNode.v);
+            if (dfsVertex.mark == MarkEnum.white) {
+                dfsVertex.pDfsVertex = sVertex; // 注意，理解深度优先树的构造过程
+                dfsHelp(dfsVertex, dfsVMap, resultList);
+            }
+            eNode = eNode.nextENode;
+        }
+        sVertex.mark = MarkEnum.black;
+        sVertex.endTime = ++time;
+        resultList.add(sVertex);
     }
 
     public boolean isHaveDirection() {
@@ -247,6 +322,11 @@ public class GraphByList {
         // 3、testGetShortPath
         String shortPath = graphByList.getShortPath("r", "a");
         System.out.println(shortPath);
+
+        // 4、testDFS
+
+        List<DfsVertex> dfs = graphByList.dfs();
+        System.out.println(dfs);
 
         System.out.println("--------------- END ---------------");
     }
