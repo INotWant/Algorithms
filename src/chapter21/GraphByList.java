@@ -14,6 +14,7 @@ public class GraphByList {
     private String[] vArray;    // 顶点集
     private boolean haveDirection; // 是否是有向图
     private int time = 0;   // 用于 DFS 访问时间
+    private boolean isNoCycle = true;
 
     /**
      * 边的数据结构用于输入
@@ -273,6 +274,54 @@ public class GraphByList {
         resultList.add(sVertex);
     }
 
+    /**
+     * 拓扑排序
+     *
+     * @return 无向图以及非有向无环图则返回 NULL ，否则返回“拓扑排序”
+     */
+    public List<String> topologicalOrdering() {
+        if (!this.haveDirection)
+            return null;
+        LinkedList<String> orderList = new LinkedList<>();
+        // 若为无向图直接返回为 NULL
+        this.time = 0;  // 初始化为 0
+        Map<String, DfsVertex> dfsVMap = new HashMap<>();
+        for (String tempV : vArray)
+            dfsVMap.put(tempV, new DfsVertex(tempV));
+        for (Map.Entry<String, DfsVertex> temp : dfsVMap.entrySet()) {  // 考虑多源情况
+            DfsVertex dfsVertex = temp.getValue();
+            if (dfsVertex.mark == MarkEnum.white)
+                topologicalHelp(dfsVertex, dfsVMap, orderList);
+        }
+        if (!isNoCycle)
+            return null;
+        return orderList;
+    }
+
+    // topological 辅助方法(DFS思想)
+    private void topologicalHelp(DfsVertex sVertex, Map<String, DfsVertex> dfsVMap, LinkedList<String> resultList) {
+        sVertex.startTime = ++time;
+        sVertex.mark = MarkEnum.gray;
+        eNode eNode = eMap.get(sVertex.v);
+        while (eNode != null) {
+            DfsVertex dfsVertex = dfsVMap.get(eNode.v);
+            if (dfsVertex.mark == MarkEnum.gray)
+                isNoCycle = false;   // 发现后向边
+            if (dfsVertex.mark == MarkEnum.white) {
+                dfsVertex.pDfsVertex = sVertex; // 注意，理解深度优先树的构造过程
+                topologicalHelp(dfsVertex, dfsVMap, resultList);
+            }
+            eNode = eNode.nextENode;
+        }
+        sVertex.mark = MarkEnum.black;
+        sVertex.endTime = ++time;
+        resultList.addFirst(sVertex.v);
+    }
+
+
+    /**
+     * @return 是否是有向图
+     */
     public boolean isHaveDirection() {
         return haveDirection;
     }
@@ -281,7 +330,7 @@ public class GraphByList {
 
     public static void main(String[] args) {
         // 1、testCrateGraph
-        String[] vArray = {"r", "s", "t", "u", "v", "w", "x", "y"};
+//        String[] vArray = {"r", "s", "t", "u", "v", "w", "x", "y"};
 
         // 边集1
 //        Edge[] edges = new Edge[10];
@@ -297,36 +346,68 @@ public class GraphByList {
 //        edges[9] = new Edge("x", "u");
 
         // 边集2
+//        Edge[] edges = new Edge[9];
+//        edges[0] = new Edge("r", "s");
+//        edges[1] = new Edge("r", "v");
+//        edges[2] = new Edge("w", "t");
+//        edges[3] = new Edge("w", "x");
+//        edges[4] = new Edge("t", "x");
+//        edges[5] = new Edge("t", "u");
+//        edges[6] = new Edge("x", "y");
+//        edges[7] = new Edge("y", "u");
+//        edges[8] = new Edge("x", "u");
+//
+//        GraphByList graphByList = new GraphByList(vArray, edges, false);
+
+        // 边集3.1 （用于测试拓扑排序）
+//        String[] vArray = {"u", "v", "w", "x", "y", "z"};
+//        Edge[] edges = new Edge[8];
+//        edges[0] = new Edge("u", "v");
+//        edges[1] = new Edge("u", "x");
+//        edges[2] = new Edge("x", "v");
+//        edges[3] = new Edge("y", "x");
+//        edges[4] = new Edge("v", "y");
+//        edges[5] = new Edge("z", "z");
+//        edges[6] = new Edge("w", "y");
+//        edges[7] = new Edge("w", "z");
+
+        // 边集3.2 （用于测试拓扑排序）
+        String[] vArray = {"内裤", "裤子", "腰带", "衬衣", "领带", "夹克", "袜子", "鞋子", "手表"};
         Edge[] edges = new Edge[9];
-        edges[0] = new Edge("r", "s");
-        edges[1] = new Edge("r", "v");
-        edges[2] = new Edge("w", "t");
-        edges[3] = new Edge("w", "x");
-        edges[4] = new Edge("t", "x");
-        edges[5] = new Edge("t", "u");
-        edges[6] = new Edge("x", "y");
-        edges[7] = new Edge("y", "u");
-        edges[8] = new Edge("x", "u");
+        edges[0] = new Edge("内裤", "裤子");
+        edges[1] = new Edge("内裤", "鞋子");
+        edges[2] = new Edge("腰带", "夹克");
+        edges[3] = new Edge("裤子", "腰带");
+        edges[4] = new Edge("衬衣", "腰带");
+        edges[5] = new Edge("衬衣", "领带");
+        edges[6] = new Edge("袜子", "鞋子");
+        edges[7] = new Edge("领带", "夹克");
+        edges[8] = new Edge("裤子", "鞋子");
 
-
-        GraphByList graphByList = new GraphByList(vArray, edges, false);
+        GraphByList graphByList = new GraphByList(vArray, edges, true);
 
 //        GraphByList graphByList = new GraphByList(vArray, null, false);
 
         // 2、testBFS
-        List<BfsVertex> resultList = graphByList.bfs("r");
-        List<BfsVertex> resultList1 = graphByList.bfs("s");
-        System.out.println(resultList);
-        System.out.println(resultList1);
+//        List<BfsVertex> resultList = graphByList.bfs("r");
+//        List<BfsVertex> resultList = graphByList.bfs("u");
+//        List<BfsVertex> resultList1 = graphByList.bfs("s");
+//        List<BfsVertex> resultList1 = graphByList.bfs("v");
+//        System.out.println(resultList);
+//        System.out.println(resultList1);
 
         // 3、testGetShortPath
-        String shortPath = graphByList.getShortPath("r", "a");
-        System.out.println(shortPath);
+//        String shortPath = graphByList.getShortPath("r", "a");
+//        String shortPath = graphByList.getShortPath("u", "y");
+//        System.out.println(shortPath);
 
         // 4、testDFS
-
         List<DfsVertex> dfs = graphByList.dfs();
         System.out.println(dfs);
+
+        // 5、testTopologicalOrdering
+        System.out.println("TopologicalOrdering :: ");
+        System.out.println(graphByList.topologicalOrdering());
 
         System.out.println("--------------- END ---------------");
     }
