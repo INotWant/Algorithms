@@ -12,6 +12,7 @@ public class GraphByList {
 
     private Map<String, eNode> eMap = new HashMap<>();  // 边集
     private String[] vArray;    // 顶点集
+    private Edge[] edges;       // 原边集
     private boolean haveDirection; // 是否是有向图
     private int time = 0;   // 用于 DFS 访问时间
     private boolean isNoCycle = true;
@@ -124,6 +125,12 @@ public class GraphByList {
             eMap.put(v, null);
         }
         if (edges != null) {
+            // 保留原边集
+            this.edges = new Edge[edges.length];
+            int i = 0;
+            for (Edge edge : edges)
+                this.edges[i++] = edge;
+
             for (Edge edge : edges) {
                 eNode eNode1 = eMap.get(edge.v1);
                 init(eNode1, edge.v1, edge.v2);
@@ -280,10 +287,11 @@ public class GraphByList {
      * @return 无向图以及非有向无环图则返回 NULL ，否则返回“拓扑排序”
      */
     public List<String> topologicalOrdering() {
+        // 若为无向图直接返回为 NULL
         if (!this.haveDirection)
             return null;
+
         LinkedList<String> orderList = new LinkedList<>();
-        // 若为无向图直接返回为 NULL
         this.time = 0;  // 初始化为 0
         Map<String, DfsVertex> dfsVMap = new HashMap<>();
         for (String tempV : vArray)
@@ -318,6 +326,52 @@ public class GraphByList {
         resultList.addFirst(sVertex.v);
     }
 
+    /**
+     * 获取有向图的转置
+     */
+    public GraphByList getGraphT() {
+        if (this.edges == null)
+            return null;
+        Edge[] edges = new Edge[this.edges.length];
+        for (int i = 0; i < edges.length; i++)
+            edges[i] = new Edge(this.edges[i].v2, this.edges[i].v1);
+        return new GraphByList(vArray, edges, haveDirection);
+    }
+
+    /**
+     * 获取有向图的强连通分量，若为无向图则返回 NULL
+     */
+    public List<String> getStronglyConnectedComponents() {
+        // 只涉及有向图（无向图的连通分量可以直接使用 ---- 不想交的集合完成）
+        if (!haveDirection)
+            return null;
+
+        List<String> sccList = new ArrayList<>();
+        // 第一此 DFS --> 获取顶点以 完成时间 为准则的逆序列表
+        LinkedList<String> orderList = new LinkedList<>();
+        this.time = 0;  // 初始化为 0
+        Map<String, DfsVertex> dfsVMap = new HashMap<>();
+        for (String tempV : vArray)
+            dfsVMap.put(tempV, new DfsVertex(tempV));
+        for (Map.Entry<String, DfsVertex> temp : dfsVMap.entrySet()) {  // 考虑多源情况
+            DfsVertex dfsVertex = temp.getValue();
+            if (dfsVertex.mark == MarkEnum.white)
+                topologicalHelp(dfsVertex, dfsVMap, orderList);
+        }
+        // 第二次 DFS --> 注意要把图 G 转置
+        GraphByList graphT = getGraphT();
+        // 重新初始化 dfsVMap
+        for (String tempV : vArray)
+            dfsVMap.put(tempV, new DfsVertex(tempV));
+        for (String vTemp : orderList) {
+            if (dfsVMap.get(vTemp).mark == MarkEnum.white) {
+                LinkedList<String> aSCC = new LinkedList<>();
+                graphT.topologicalHelp(dfsVMap.get(vTemp), dfsVMap, aSCC);
+                sccList.add(aSCC.toString());
+            }
+        }
+        return sccList;
+    }
 
     /**
      * @return 是否是有向图
@@ -372,17 +426,35 @@ public class GraphByList {
 //        edges[7] = new Edge("w", "z");
 
         // 边集3.2 （用于测试拓扑排序）
-        String[] vArray = {"内裤", "裤子", "腰带", "衬衣", "领带", "夹克", "袜子", "鞋子", "手表"};
-        Edge[] edges = new Edge[9];
-        edges[0] = new Edge("内裤", "裤子");
-        edges[1] = new Edge("内裤", "鞋子");
-        edges[2] = new Edge("腰带", "夹克");
-        edges[3] = new Edge("裤子", "腰带");
-        edges[4] = new Edge("衬衣", "腰带");
-        edges[5] = new Edge("衬衣", "领带");
-        edges[6] = new Edge("袜子", "鞋子");
-        edges[7] = new Edge("领带", "夹克");
-        edges[8] = new Edge("裤子", "鞋子");
+//        String[] vArray = {"内裤", "裤子", "腰带", "衬衣", "领带", "夹克", "袜子", "鞋子", "手表"};
+//        Edge[] edges = new Edge[9];
+//        edges[0] = new Edge("内裤", "裤子");
+//        edges[1] = new Edge("内裤", "鞋子");
+//        edges[2] = new Edge("腰带", "夹克");
+//        edges[3] = new Edge("裤子", "腰带");
+//        edges[4] = new Edge("衬衣", "腰带");
+//        edges[5] = new Edge("衬衣", "领带");
+//        edges[6] = new Edge("袜子", "鞋子");
+//        edges[7] = new Edge("领带", "夹克");
+//        edges[8] = new Edge("裤子", "鞋子");
+
+        // 边集4（用于测试强连通分量）
+        String[] vArray = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        Edge[] edges = new Edge[14];
+        edges[0] = new Edge("a", "b");
+        edges[1] = new Edge("e", "a");
+        edges[2] = new Edge("b", "e");
+        edges[3] = new Edge("b", "f");
+        edges[4] = new Edge("e", "f");
+        edges[5] = new Edge("f", "g");
+        edges[6] = new Edge("g", "f");
+        edges[7] = new Edge("c", "g");
+        edges[8] = new Edge("c", "d");
+        edges[9] = new Edge("d", "c");
+        edges[10] = new Edge("d", "h");
+        edges[11] = new Edge("h", "h");
+        edges[12] = new Edge("g", "h");
+        edges[13] = new Edge("b", "c");
 
         GraphByList graphByList = new GraphByList(vArray, edges, true);
 
@@ -408,6 +480,10 @@ public class GraphByList {
         // 5、testTopologicalOrdering
         System.out.println("TopologicalOrdering :: ");
         System.out.println(graphByList.topologicalOrdering());
+
+        // 6、testGetStronglyConnectedComponents
+        System.out.println("ConnectedComponents :: ");
+        System.out.println(graphByList.getStronglyConnectedComponents());
 
         System.out.println("--------------- END ---------------");
     }
