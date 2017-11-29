@@ -1,7 +1,6 @@
-package chapter22;
+package chapter23;
 
 import chapter21.DisjointSetByTree;
-import chapter23.UndirectedGraph;
 import org.junit.Test;
 
 import java.util.ArrayList;
