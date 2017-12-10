@@ -87,7 +87,12 @@
     - `Bellman_Ford`
     - 解决有向无环图算法应用 -- `PERT`
     - 解决有向图权重非负图 -- `Dijkstra`
-    
+
+- **chapter 25**
+    - 所有结点对的最短路径 -- 类矩阵乘法解法
+    - 利用最短路径矩阵计算前驱子图 -- `Queue`
+    - `FloydWarshall`
+    - `Johnson`
 
 ## 资源
 
