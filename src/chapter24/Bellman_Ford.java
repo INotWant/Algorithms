@@ -48,7 +48,7 @@ public class Bellman_Ford {
         }
         List<String> resultList = new ArrayList<>();
         for (String v : vArray)
-            resultList.add(getPath(vStart, v, vertexMap) + " " + vertexMap.get(v).d);
+            resultList.add(getPath(vStart, v, vertexMap) + vertexMap.get(v).d);
         return resultList;
     }
 

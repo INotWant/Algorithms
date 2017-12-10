@@ -49,7 +49,7 @@ public class Dijkstra {
         }
         List<String> resultList = new ArrayList<>();
         for (String v : vArray)
-            resultList.add(getPath(vStart, v, resultMap) + " " + resultMap.get(v).d);
+            resultList.add(getPath(vStart, v, resultMap) + resultMap.get(v).d);
         return resultList;
     }
 
