@@ -94,6 +94,9 @@
     - `FloydWarshall`
     - `Johnson`
 
+- **chapter 26**
+    - `EdmondsKarp`
+
 ## 资源
 
 推荐原作者的讲授视频：[《算法导论(*MIT*)》](http://open.163.com/special/opencourse/algorithms.html)
