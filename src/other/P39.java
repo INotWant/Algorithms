@@ -2,6 +2,7 @@ package other;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  * @author kissx on 2018/3/6.
  */
 public class P39 {
-
+/*
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         Arrays.sort(candidates);
         int index = Arrays.binarySearch(candidates, target);
@@ -42,6 +43,33 @@ public class P39 {
             }
         }
         return result;
+    }
+*/
+
+    /**
+     * 回溯法
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> result = new LinkedList<>();
+        help(candidates, target, 0, new LinkedList<>(), result);
+        return result;
+    }
+
+    private void help(int[] candidates, int target, int start, LinkedList<Integer> midList, List<List<Integer>> result) {
+        for (int i = start; i < candidates.length; i++) {
+            if (target == candidates[i]) {
+                midList.addLast(candidates[i]);
+                result.add(new LinkedList<>(midList));
+                midList.removeLast();
+                break;
+            } else if (candidates[i] < target) {
+                midList.addLast(candidates[i]);
+                help(candidates, target - candidates[i], i, midList, result);
+                midList.removeLast();
+            } else
+                break;
+        }
     }
 
 
